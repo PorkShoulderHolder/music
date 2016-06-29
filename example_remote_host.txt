@@ -1,0 +1,1 @@
+http://localhost:8086/write?db=pollution

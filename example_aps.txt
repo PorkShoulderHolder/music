@@ -1,0 +1,3 @@
+RF232TTY,TRE8992SDFF45
+myiphone,nostealin
+another_network,another_password
