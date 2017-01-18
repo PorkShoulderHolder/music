@@ -1,6 +1,4 @@
 import termios, fcntl, sys, os
-import socket
-
 fd = sys.stdin.fileno()
 
 oldterm = termios.tcgetattr(fd)
@@ -14,35 +12,22 @@ fcntl.fcntl(fd, fcntl.F_SETFL, oldflags | os.O_NONBLOCK)
 r_on = False
 l_on = False
 
-target_addr = sys.argv[1]
-port =  8888
-
-sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-def netcat_sendp(on, p, ta):
-    os.system("echo l:::0 | nc -4u -w0 {0} 8888".format(target_addr))
-
-def sock_send(contents):
-    sock.sendto(contents, (target_addr, port))
-
-
-
 try:
     while 1:
         try:
             c = sys.stdin.read(1)
             if c == 'h' and l_on:
                 l_on = not l_on
-                sock_send("l:::0")
+                os.system("echo l:::0 | nc -4u -w0 goodvibes.local 8888")
             elif c == 'h' and not l_on:
                 l_on = not l_on
-                sock_send("l:::1")
+                os.system("echo l:::1000 | nc -4u -w0 goodvibes.local 8888")
             elif c == 'k' and r_on:
                 r_on = not r_on
-                sock_send("r:::0")
+                os.system("echo r:::0 | nc -4u -w0 goodvibes.local 8888")
             elif c == 'k' and not r_on:
                 r_on = not r_on
-                sock_send("r:::1")
+                os.system("echo r:::1000 | nc -4u -w0 goodvibes.local 8888")
         except IOError: pass
 finally:
     termios.tcsetattr(fd, termios.TCSAFLUSH, oldterm)

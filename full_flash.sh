@@ -1,9 +1,3 @@
 python luatool.py --port $1 --src telnet_srv.lua --dest init.lua  --baud 115200 --verbose
-python luatool.py --port $1 --src telnet_srv.lua --dest init.lua  --baud 115200 --verbose
-python luatool.py --port $1 --src udp.lua --dest udp.lua  --baud 115200 --verbose
-python luatool.py --port $1 --src telnet.lua --dest telnet.lua  --baud 115200 --verbose
-python luatool.py --port $1 --src pindriver.lua --dest pindriver.lua  --baud 115200 --verbose
-python luatool.py --port $1 --src coapcp.lua --dest coapcp.lua  --baud 115200 --verbose
-python luatool.py --port $1 --src pin_config.json --dest pin_config.json  --baud 115200 --verbose
-python luatool.py --port $1 --src storage.lua --dest storage.lua  --baud 115200 --verbose
 python luatool.py --port $1 --src aps.txt --dest aps.txt  --baud 115200 --verbose
+python luatool.py --port $1 --src coapcp.lua --dest coapcp.lua  --baud 115200 --verbose

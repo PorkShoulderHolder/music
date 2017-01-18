@@ -16,10 +16,17 @@ function testKnownNetworks(avail_nets)
       line = file.readline()
    end
 end
+function saferun(name)
+   if file.exists(name) then
+      dofile(name)
+   else
+      print ("file not found " .. name)
+   end
+end
 wifi.setmode(wifi.STATION)
-dofile("telnet.lua")
-dofile("coapcp.lua")
---dofile("pindriver.lua")
+saferun("coapcp.lua")
+saferun("udp.lua")
+saferun("telnet.lua")
 wifi.sta.getap(testKnownNetworks)
 uart.write(0,"\\n")
 tmr.alarm(0, 1000, 1, function()
@@ -30,6 +37,6 @@ tmr.alarm(0, 1000, 1, function()
       tmr.stop(0)
       tmr.unregister(0)
       uart.write(0,"connected")
-      dofile("air_sample.lua")
+      --dofile("air_sample.lua")
    end
 end)

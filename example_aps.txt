@@ -1,3 +1,2 @@
-RF232TTY,TRE8992SDFF45
-myiphone,nostealin
-another_network,another_password
+TG1672GF2,TG1672GB7DDF2
+sfriphone,nostealin
