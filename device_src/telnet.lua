@@ -26,7 +26,7 @@ function setupTelnetServer()
             end)
     end
 
-    telnetServer = net.createServer(net.TCP, 180)
+    telnetServer = net.createServer(net.TCP, 30)
     telnetServer:listen(23, listenFun)
     print("telnet server listening")
 end

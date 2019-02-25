@@ -1,1 +1,8 @@
-{"right":1, "left":2, "reverse_power":0}
+{
+  "right":1, 
+  "left":2, 
+  "reverse_power":0,
+  "red":7,
+  "green": 5,
+  "blue": 6
+}

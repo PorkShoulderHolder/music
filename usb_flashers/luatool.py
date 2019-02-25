@@ -57,7 +57,7 @@ class AbstractTransport:
         while char != chr(62):  # '>'
             char = self.read(1)
             if char == '':
-                raise Exception('No proper answer from MCU')
+                raise IOError('No proper answer from MCU')
             if char == chr(13) or char == chr(10):  # LF or CR
                 if line != '':
                     line = line.strip()
@@ -66,7 +66,7 @@ class AbstractTransport:
                     else:
                         if line[:4] == "lua:":
                             sys.stdout.write("\r\n\r\nLua ERROR: %s" % line)
-                            raise Exception('ERROR from Lua interpreter\r\n\r\n')
+                            raise IOError('ERROR from Lua interpreter\r\n\r\n')
                         else:
                             expected = expected.split("\r")[0]
                             sys.stdout.write("\r\n\r\nERROR")
@@ -74,7 +74,7 @@ class AbstractTransport:
                             sys.stdout.write("\r\n expected echo  : '%s'" % expected)
                             sys.stdout.write("\r\n but got answer : '%s'" % line)
                             sys.stdout.write("\r\n\r\n")
-                            raise Exception('Error sending data to MCU\r\n\r\n')
+                            raise IOError('Error sending data to MCU\r\n\r\n')
                     line = ''
             else:
                 line += char
@@ -103,8 +103,8 @@ class SerialTransport(AbstractTransport):
         self.serial.write(data)
         sleep(0.3)
         if check > 0:
-            self.performcheck(data)
-        else:
+	    self.performcheck(data)
+	else:
             sys.stdout.write(" -> send without check")
 
     def read(self, length):
