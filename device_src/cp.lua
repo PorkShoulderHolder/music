@@ -19,10 +19,12 @@ local low = settings["reverse_power"] and gpio.HIGH or gpio.LOW
 file.close()
 
 function right(data)
+  print("r", data)
   local power = tonumber(data)
   gpio.write(settings["right"], power==1 and hi or low)
 end
 function left(data)
+  print("l", data)
   local power = tonumber(data)
   gpio.write(settings["left"], power==1 and hi or low)
 end
@@ -31,12 +33,12 @@ function handle_sequence(sequence)
   local tmr_id = 0;
   for k,v in pairs(sequence) do
     local ms = tonumber(k)
-    local side = string.sub(v, 1, 2)
-    local action = string.sub(v, 2, 3)
+    local side = string.sub(v, 1, 1)
+    local action = string.sub(v, 2, 2)
     if side == 'r' then
-      tmr.alarm(tmr_id, ms, tmr.ALARM_SINGLE, function() right(action) end)
+      tmr.alarm(tmr_id % 7, ms, tmr.ALARM_SINGLE, function() right(action) end)
     elseif side == 'l' then
-      tmr.alarm(tmr_id, ms, tmr.ALARM_SINGLE, function() left(action) end)
+      tmr.alarm(tmr_id % 7, ms, tmr.ALARM_SINGLE, function() left(action) end)
     end
     tmr_id = tmr_id + 1;
   end

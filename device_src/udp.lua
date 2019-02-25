@@ -33,6 +33,7 @@ function setup_pindriver_server(settings)
    end
    pindriver:on("receive",router)
    pindriver:listen(8888)
+   print("udp listening")
 end
 file.open("pin_config.json","r")
 local mappings = cjson.decode(file.read())
