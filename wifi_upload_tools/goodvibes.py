@@ -44,5 +44,30 @@ def send(host, msg):
     print(response)
 
 
+@cli.command()
+@click.argument("host")
+@click.option("--tempo", default=100)
+@click.option("--pattern", required=True)
+def rhythm(host, tempo, pattern):
+    client = socket.socket()
+    hostname, port = host, TCPAPI_PORT
+    client.connect((host, port))
+    current_char = "_"
+    message = {}
+    for i, c in enumerate(pattern):
+        if c != current_char and current_char != "_":
+            message[str(i * tempo + 1)] = current_char + "1"
+        if c != current_char and c == "l":
+            message[str(i * tempo + 1)] = "l0"
+        elif c != current_char and c == "r":
+            message[str(i * tempo + 1)] = "r0"
+        current_char = c
+
+    msg = json.dumps({"sequence": message})
+    print(msg)
+    client.send(msg)
+    response = client.recv(4096)
+    print(response)
+
 if __name__ == '__main__':
     cli()

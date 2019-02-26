@@ -9,7 +9,10 @@ function testKnownNetworks(avail_nets)
       name,pw = string.match(line, "([^,]+),([^,]+)")
       pw = string.gsub(pw, "\n", "")
       if avail_nets[name] ~= nil then
-         wifi.sta.config(name, pw)
+         local config_table = {}
+         config_table.pwd = pw
+         config_table.ssid = name
+         wifi.sta.config(config_table)
          print(name)
          print(pw)
          print("attempting to connect to " .. name)

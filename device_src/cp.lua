@@ -13,7 +13,7 @@ function write_file(mappings)
     end
 end
 file.open("pin_config.json","r")
-local settings = cjson.decode(file.read())
+local settings = sjson.decode(file.read())
 local hi = settings["reverse_power"] and gpio.LOW or gpio.HIGH
 local low = settings["reverse_power"] and gpio.HIGH or gpio.LOW
 file.close()
@@ -35,10 +35,11 @@ function handle_sequence(sequence)
     local ms = tonumber(k)
     local side = string.sub(v, 1, 1)
     local action = string.sub(v, 2, 2)
+    local timer = tmr.create()
     if side == 'r' then
-      tmr.alarm(tmr_id % 7, ms, tmr.ALARM_SINGLE, function() right(action) end)
+      timer:alarm(ms, tmr.ALARM_SINGLE, function() right(action) end)
     elseif side == 'l' then
-      tmr.alarm(tmr_id % 7, ms, tmr.ALARM_SINGLE, function() left(action) end)
+      timer:alarm(ms, tmr.ALARM_SINGLE, function() left(action) end)
     end
     tmr_id = tmr_id + 1;
   end
@@ -55,7 +56,7 @@ function setupTcpServer()
         inUse = true
         
         sock:on("receive",function(sock, input)
-            local mappings = cjson.decode(input)
+            local mappings = sjson.decode(input)
             if mappings["filename"] ~= nil then
               write_file(mappings)
               sock:send("{'msg': 'ok'}")

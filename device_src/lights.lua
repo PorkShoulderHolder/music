@@ -1,5 +1,5 @@
 file.open("pin_config.json","r")
-local settings = cjson.decode(file.read())
+local settings = sjson.decode(file.read())
 local red_pin = settings["red"]
 local blue_pin = settings["blue"]
 local green_pin = settings["green"]

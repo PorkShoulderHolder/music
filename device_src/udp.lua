@@ -36,5 +36,5 @@ function setup_pindriver_server(settings)
    print("udp listening")
 end
 file.open("pin_config.json","r")
-local mappings = cjson.decode(file.read())
+local mappings = sjson.decode(file.read())
 setup_pindriver_server(mappings)
