@@ -1,6 +1,7 @@
-import click 
+import click
 import socket
 import json
+from math import ceil
 
 TCPAPI_PORT = 3344
 
@@ -21,15 +22,20 @@ def cp(host, filename, dest_filename, restart):
     hostname, port = host, TCPAPI_PORT
     client = socket.socket()
     client.connect((host, port))
+    maxsize = 1300  # 1.3 KB
     print("writing {} to {} as {}".format(filename, host, dest_filename))
     with open(filename) as f:
         file_data = f.read()
-        data = {"filename": dest_filename, "data": file_data}
-        if restart:
-            data["restart"] = True
-        client.send(json.dumps(data, encoding='utf-8'))
-        response = client.recv(4096)
-        print(response)
+        chunks = [file_data[i * maxsize: (i + 1) * maxsize] for i in range(
+            0, int(ceil(len(file_data) / maxsize)) + 1)]
+        for i, c in enumerate(chunks):
+            data = "cpfile{}:::{};;;{}".format(dest_filename,
+                                               "{}/{}".format(i + 1,
+                                                              len(chunks)),
+                                               c)
+            client.send(data)
+            response = client.recv(4096)
+            print(response)
 
 
 @cli.command()
@@ -64,7 +70,6 @@ def rhythm(host, tempo, pattern):
         current_char = c
 
     msg = json.dumps({"sequence": message})
-    print(msg)
     client.send(msg)
     response = client.recv(4096)
     print(response)
