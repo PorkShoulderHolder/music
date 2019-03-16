@@ -23,7 +23,6 @@ function write_file(input)
     print(part_idx_s, part_idx_f)
     print(part.." / "..total)
     print("writing new data to " .. filename)
-    print(content)
     file.write(content)
     file.close()
     return part, total
@@ -89,8 +88,26 @@ function handle_sequence_sync(sequence)
   end
 end
 
+function handle_file_cp(input)
+  local part, total = write_file(string.sub(input, 7))
+  sock:send("{'msg': 'wrote ".. part .. "/" .. total .. " chunks'}")
+  blink_blue();
+  if part == total then
+    blink_green();
+    local t = tmr.create()
+    t:register(1000, 
+               tmr.ALARM_SINGLE,
+               function()
+                 sock.close() 
+                 node.restart()
+               end)
+    t:start()
+  end
+end
+
 function setupTcpServer()
     inUse = false
+    should_repeat = false
     function listenFun(sock)
         if inUse then
             sock:send("Already in use.\\n")
@@ -100,21 +117,35 @@ function setupTcpServer()
         inUse = true
         local buffer = nil;
         
+        local timer = tmr.create()
         sock:on("receive", function(sock, input)
             if string.sub(input, 1, 6) == 'cpfile' then
-              local part, total = write_file(string.sub(input, 7))
-              sock:send("{'msg': 'wrote ".. part .. "/" .. total .. " chunks'}")
-              blink_blue();
-              if part == total then
-                blink_green();
-                sock:close()
-                node.restart()
-              end
+              handle_file_cp(input)
             else
               local mappings = sjson.decode(input)
               if mappings["sequence"] ~= nil then
-                handle_sequence_sync(mappings["sequence"])
-                sock:send("{'msg': 'sequence ok'}")
+                timer:unregister()
+                if mappings["repeat"] then
+                  should_repeat = true
+                  timer:register(tonumber(mappings["repeat"]),
+                                 tmr.ALARM_SEMI,
+                                 function()
+		                   handle_sequence_sync(mappings["sequence"]) 
+                                   if not should_repeat then
+                                     timer:unregister()
+                                   else
+                                     timer:start()
+                                   end
+                                 end)
+                  sock:send("{'msg': 'sequence ok'}")
+                  timer:start()
+                else
+                  should_repeat = false
+                  handle_sequence_sync(mappings["sequence"])
+                  sock:send("{'msg': 'sequence ok'}")
+                end
+              elseif mappings["lights"] ~= nil then 
+                ease_color(mappings["lights"])
               else
                 sock:send("{'msg': 'command not understood'}")
               end

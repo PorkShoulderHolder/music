@@ -53,8 +53,9 @@ def send(host, msg):
 @cli.command()
 @click.argument("host")
 @click.option("--tempo", default=100)
+@click.option("--repeat", default=None)
 @click.option("--pattern", required=True)
-def rhythm(host, tempo, pattern):
+def rhythm(host, tempo, repeat, pattern):
     client = socket.socket()
     hostname, port = host, TCPAPI_PORT
     client.connect((host, port))
@@ -68,8 +69,10 @@ def rhythm(host, tempo, pattern):
         elif c != current_char and c == "r":
             message[str(i * tempo + 1)] = "r0"
         current_char = c
-
-    msg = json.dumps({"sequence": message})
+    doc = {"sequence": message}
+    if repeat is not None:
+        doc["repeat"] = int(repeat)
+    msg = json.dumps(doc)
     client.send(msg)
     response = client.recv(4096)
     print(response)
