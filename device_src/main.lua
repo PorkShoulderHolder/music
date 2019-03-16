@@ -21,6 +21,7 @@ function testKnownNetworks(avail_nets)
       line = file.readline()
    end
 end
+
 function saferun(name)
    if file.exists(name) then
       dofile(name)
@@ -28,6 +29,7 @@ function saferun(name)
       print ("file not found " .. name)
    end
 end
+
 wifi.setmode(wifi.STATION)
 saferun("coapcp.lua")
 saferun("udp.lua")
